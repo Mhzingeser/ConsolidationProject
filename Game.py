@@ -46,3 +46,9 @@ class Deck:
             self.discard_pile.append(card)
             return card
         return None
+    
+#AI Components
+
+class AIStrategy(Protocol):
+    def choose_card(self, hand: List[Card], lead_suit: Optional[str]) -> Card:
+        ...  #... its meants to pass nothing from the start of initialization, its a premade template for the AI to use in order to do a function.
