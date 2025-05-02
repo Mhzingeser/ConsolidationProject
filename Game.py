@@ -90,3 +90,96 @@ class Player:
                         break
                     return card
             print("Invalid choice. Try again.")
+
+
+
+#Game Manager/Gameplay aspect
+
+class TricksyBattleGame:
+    def __init__(self):
+        self.deck = Deck()
+        self.human = Player("You")
+        self.computer = Player("Computer", is_computer=True)
+        self.stats = GameStats() #Meant for saving the stats after game is done
+        self.leader = None
+        self.round = 0
+
+    def setup_game(self):
+        self.deck.shuffle()
+        self.human.add_to_hand(self.deck.deal(8))
+        self.computer.add_to_hand(self.deck.deal(8))
+        self.leader = random.choice([self.human, self.computer])
+        print(f"\n{self.leader.name} leads the first round.")
+
+    def play_game(self):
+        print("\nWelcome to Tricksy Battle!")
+        self.setup_game()
+        while self.round < 16 and self.human.hand:
+            self.play_round()
+            input("\nPress Enter to continue...")
+        self._end_game()
+
+    def play_round(self):
+        self.round += 1
+        print(f"\n=== Round {self.round} ===")
+        print(f"Score - You: {self.human.points}, Computer: {self.computer.points}")
+
+        follower = self.computer if self.leader == self.human else self.human
+        print(f"\n{self.leader.name} lead(s).")
+        lead_card = self.leader.play_card()
+        print(f"{self.leader.name} played: {lead_card}")
+
+        print(f"{follower.name}(r)('s) turn.")
+        follow_card = follower.play_card(lead_card.suit)
+        print(f"{follower.name} played: {follow_card}")
+
+        if follow_card.suit == lead_card.suit:
+            winner = self.leader if lead_card.value > follow_card.value else follower
+        else:
+            winner = self.leader
+
+        winner.points += 1
+        self.leader = winner
+        print(f"{winner.name} win(s) the round!")
+
+        if winner == self.computer:
+            self._computer_trash_talk()
+
+        if revealed := self.deck.reveal_card():
+            print(f"Revealed card: {revealed}")
+        self._maybe_replenish_hands()
+        if self._check_early_end():
+            self._end_game()
+
+    def _maybe_replenish_hands(self):
+        if len(self.human.hand) == 4 and len(self.computer.hand) == 4:
+            if len(self.deck.cards) >= 8:
+                print("Refilling deck...")
+                self.human.add_to_hand(self.deck.deal(4))
+                self.computer.add_to_hand(self.deck.deal(4))
+
+    def _check_early_end(self) -> bool:
+        h, c = self.human.points, self.computer.points
+        if (h == 16 and c == 0) or (c == 16 and h == 0):
+            winner = self.human if h == 16 else self.computer
+            winner.points = 17
+            print(f"\n{winner.name} shot the moon!")
+            return True
+        if (h >= 9 and c >= 1) or (c >= 9 and h >= 1):
+            print("\nOne player reached 9 points and the other has at least 1. Ending early.")
+            return True
+        return False
+
+    def _end_game(self):
+        print("\n=== Game Over ===")
+        print(f"Final Score - You: {self.human.points}, Computer: {self.computer.points}")
+        if self.human.points > self.computer.points:
+            print("You win!")
+            self.stats.record_game(True, self.human.points == 17)
+        elif self.computer.points > self.human.points:
+            print("Computer wins.")
+            self.stats.record_game(False, self.computer.points == 17)
+        else:
+            print("It's a tie!")
+            self.stats.record_game(False)
+        self.stats.display_stats()
