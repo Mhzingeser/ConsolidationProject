@@ -1,6 +1,6 @@
 import os
 import random
-
+import json #This is for the save system
 from typing import List, Dict, Optional, Protocol  #These will be needed for their selective-
 #purposes, such as Listing cards on hand, options, protocol (for computer player).
 
@@ -91,6 +91,45 @@ class Player:
                     return card
             print("Invalid choice. Try again.")
 
+
+#Save Aspect
+#This is needed if you want to track your win/loss ratio with the computer opponent
+class GameStats:
+    STATS_FILE = "tricksy_battle_stats.json"
+
+    def __init__(self):
+        self.stats = self._load_stats()
+
+    def _load_stats(self) -> Dict:
+        try:
+            if os.path.exists(self.STATS_FILE):
+                with open(self.STATS_FILE, 'r') as f:
+                    return json.load(f)
+        except (IOError, json.JSONDecodeError):
+            pass
+        return {"games_played": 0, "human_wins": 0, "computer_wins": 0, "shot_the_moon": 0}
+
+    def save_stats(self):
+        try:
+            with open(self.STATS_FILE, 'w') as f:
+                json.dump(self.stats, f)
+        except IOError:
+            print("Warning: Could not save game stats.")
+
+    def record_game(self, human_won: bool, shot_the_moon: bool = False):
+        self.stats["games_played"] += 1
+        if human_won:
+            self.stats["human_wins"] += 1
+        else:
+            self.stats["computer_wins"] += 1
+        if shot_the_moon:
+            self.stats["shot_the_moon"] += 1
+        self.save_stats()
+
+    def display_stats(self):
+        print("\nGame Statistics:")
+        for k, v in self.stats.items():
+            print(f"{k.replace('_', ' ').capitalize()}: {v}")
 
 
 #Game Manager/Gameplay aspect
