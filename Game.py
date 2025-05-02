@@ -228,3 +228,27 @@ class TricksyBattleGame:
             print("It's a tie!")
             self.stats.record_game(False)
         self.stats.display_stats()
+    
+    def _computer_trash_talk(self):
+        taunts = [
+            "Too easy.",
+            "Did you mean to play that card?",
+            "You sure you know how this game works?",
+            "Classic human error.",
+            "I'm just getting started.",
+            "That was adorable.",
+            "I see every move... before you even make it.",
+            "Better put your thinking cap on.",
+            "You should probably surrender now.",
+            "Do you want a rematch already?",
+            "I can't believe im playing against a player so mediocre",
+            "LOL L + RATIO LOSER!!!!"
+        ]
+        print(f"Computer: {random.choice(taunts)}")
+
+        
+def main():
+    game = TricksyBattleGame()
+    game.play_game()
+
+main()
