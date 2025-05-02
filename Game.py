@@ -52,3 +52,41 @@ class Deck:
 class AIStrategy(Protocol):
     def choose_card(self, hand: List[Card], lead_suit: Optional[str]) -> Card:
         ...  #... its meants to pass nothing from the start of initialization, its a premade template for the AI to use in order to do a function.
+
+
+#Player Component
+class Player:
+    def __init__(self, name: str, is_computer: bool = False, strategy: Optional[AIStrategy] = None):
+        self.name = name
+        self.hand: List[Card] = []
+        self.points = 0
+        self.is_computer = is_computer
+        self.strategy = strategy or BasicStrategy()
+
+    def add_to_hand(self, cards: List[Card]):
+        self.hand.extend(cards)
+
+    def has_suit(self, suit: str) -> bool:
+        return any(card.suit == suit for card in self.hand)
+
+    def play_card(self, lead_suit: Optional[str] = None) -> Card:
+        if self.is_computer:
+            card = self.strategy.choose_card(self.hand, lead_suit)
+        else:
+            card = self._prompt_card_choice(lead_suit)
+        self.hand.remove(card)
+        return card
+
+    def _prompt_card_choice(self, lead_suit: Optional[str]) -> Card:
+        while True:
+            print(f"\nYour hand: {', '.join(str(card) for card in self.hand)}")
+            if lead_suit and self.has_suit(lead_suit):
+                print(f"You must play a {lead_suit} card.")
+            choice = input("Choose a card to play (e.g., 'Ace of Hearts'): ").strip()
+            for card in self.hand:
+                if str(card).lower() == choice.lower():
+                    if lead_suit and self.has_suit(lead_suit) and card.suit != lead_suit:
+                        print(f"Must follow suit with a {lead_suit} card!")
+                        break
+                    return card
+            print("Invalid choice. Try again.")
