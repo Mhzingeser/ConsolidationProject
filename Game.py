@@ -53,6 +53,12 @@ class AIStrategy(Protocol):
     def choose_card(self, hand: List[Card], lead_suit: Optional[str]) -> Card:
         ...  #... its meants to pass nothing from the start of initialization, its a premade template for the AI to use in order to do a function.
 
+class BaseStrategy:
+    def choose_card(self, hand: List[Card], lead_suit: Optional[str]) -> Card:
+        suit_cards = [card for card in hand if card.suit == lead_suit] if lead_suit else []
+        if suit_cards:
+            return min(suit_cards, key = lambda c: c.value) #lamda is a anonymous function and can take a number of arguments
+        return random.choice(hand)
 
 #Player Component
 class Player:
@@ -61,7 +67,7 @@ class Player:
         self.hand: List[Card] = []
         self.points = 0
         self.is_computer = is_computer
-        self.strategy = strategy or BasicStrategy()
+        self.strategy = strategy or BaseStrategy()
 
     def add_to_hand(self, cards: List[Card]):
         self.hand.extend(cards)
