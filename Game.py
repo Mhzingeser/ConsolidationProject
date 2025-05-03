@@ -11,9 +11,11 @@ class Card:
     def __init__(self, suit: str, rank: str):    #We will need a constructor for these in order to call on a specific function for the card
         self.suit = suit
         self.rank = rank
+        #Intializes the cards of each type
     
     def __str__(self) -> str:
         return f"{self.rank} of {self.suit}"
+        #This is meant to return a fine printed string
 
     def __repr__(self) -> str:
         return f"Card('{self.suit}', '{self.rank}')"
@@ -39,6 +41,7 @@ class Deck:
 
     def deal(self, count: int) -> List[Card]:
         return [self.cards.pop() for _ in range(min(count, len(self.cards)))]
+        #Gives cards to players
 
     def reveal_card(self) -> Optional[Card]:
         if self.cards:
@@ -46,18 +49,21 @@ class Deck:
             self.discard_pile.append(card)
             return card
         return None
+        #Once round is over, it shows what card is there
     
 #AI Components
 
 class AIStrategy(Protocol):
     def choose_card(self, hand: List[Card], lead_suit: Optional[str]) -> Card:
-        ...  #... its meants to pass nothing from the start of initialization, its a premade template for the AI to use in order to do a function.
+        ...  
+        #... its meants to pass nothing from the start of initialization, its a premade template for the AI to use in order to do a function.
 
 class BaseStrategy:
     def choose_card(self, hand: List[Card], lead_suit: Optional[str]) -> Card:
         suit_cards = [card for card in hand if card.suit == lead_suit] if lead_suit else []
         if suit_cards:
-            return min(suit_cards, key = lambda c: c.value) #lamda is a anonymous function and can take a number of arguments
+            return min(suit_cards, key = lambda c: c.value) 
+            #lamda is a anonymous function and can take a number of arguments
         return random.choice(hand)
 
 #Player Component
@@ -68,6 +74,7 @@ class Player:
         self.points = 0
         self.is_computer = is_computer
         self.strategy = strategy or BaseStrategy()
+        #Initalizes the player of type human or computer. Gives both a list, and points to track
 
     def add_to_hand(self, cards: List[Card]):
         self.hand.extend(cards)
@@ -148,6 +155,7 @@ class TricksyBattleGame:
         self.stats = GameStats() #Meant for saving the stats after game is done
         self.leader = None
         self.round = 0
+        #The game start initialization, where everyone is at 0 points, round is 0
 
     def setup_game(self):
         self.deck.shuffle()
@@ -202,20 +210,24 @@ class TricksyBattleGame:
                 print("Refilling deck...")
                 self.human.add_to_hand(self.deck.deal(4))
                 self.computer.add_to_hand(self.deck.deal(4))
+                #This is called when the card threshold for each player (mainly looking at player) is 4 of less
 
     def _check_early_end(self) -> bool:
         h, c = self.human.points, self.computer.points
-        if (h == 16 and c == 0) or (c == 16 and h == 0):
+        if (h == 16 and c == 0) or (c == 16 and h == 0): 
             winner = self.human if h == 16 else self.computer
             winner.points = 17
+            #Checks for shot the moon conditions
             print(f"\n{winner.name} shot the moon!")
             return True
         if (h >= 9 and c >= 1) or (c >= 9 and h >= 1):
-            print("\nOne player reached 9 points and the other has at least 1. GameOver.")
+            #If no longer possible to "shot the moon", then it will check the other win condition of 9 points
+            print("\nOne player reached 9 points and the other has at least 1. GameOver.") 
             return True
         return False
 
     def _end_game(self):
+        #Handles the endgame
         print("\n=== Game Over! ===")
         print(f"Final Score - You: {self.human.points}, Computer: {self.computer.points}")
         if self.human.points > self.computer.points:
@@ -224,7 +236,7 @@ class TricksyBattleGame:
         elif self.computer.points > self.human.points:
             print("Computer wins.")
             self.stats.record_game(False, self.computer.points == 17)
-            self._computer_gloat_win()
+            self._computer_gloat_win() #Called after showing the computer points to show the Computer won
         else:
             print("It's a tie!")
             self.stats.record_game(False)
