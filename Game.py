@@ -3,6 +3,9 @@ import random
 import json #This is for the save system
 from typing import List, Dict, Optional, Protocol  #These will be needed for their selective-
 #purposes, such as Listing cards on hand, options, protocol (for computer player).
+import time
+from datetime import timedelta
+#I am adding a way to track game time.
 
 
 # Card Section
@@ -74,6 +77,8 @@ class Player:
         self.points = 0
         self.is_computer = is_computer
         self.strategy = strategy or BaseStrategy()
+        self.total_turn_time = 0.0  # Track cumulative turn time in seconds
+        self.turn_start_time = 0.0   # Track when turn begins
         #Initalizes the player of type human or computer. Gives both a list, and points to track
 
     def add_to_hand(self, cards: List[Card]):
@@ -83,10 +88,18 @@ class Player:
         return any(card.suit == suit for card in self.hand)
 
     def play_card(self, lead_suit: Optional[str] = None) -> Card:
+        self.turn_start_time = time.time()  # Start timing
+        
         if self.is_computer:
+            # Add small delay to make computer feel more natural
+            time.sleep(0.5)
             card = self.strategy.choose_card(self.hand, lead_suit)
         else:
             card = self._prompt_card_choice(lead_suit)
+
+        turn_duration = time.time() - self.turn_start_time
+        self.total_turn_time += turn_duration
+        print(f"{self.name}'s turn took {turn_duration:.1f} seconds")
         self.hand.remove(card)
         return card
 
@@ -112,6 +125,11 @@ class GameStats:
 
     def __init__(self):
         self.stats = self._load_stats()
+        # Add new timing stats
+        self.stats.setdefault("total_game_time", 0.0)
+        self.stats.setdefault("human_turn_time", 0.0)
+        self.stats.setdefault("computer_turn_time", 0.0)
+        self.stats.setdefault("average_turn_time", 0.0)
 
     def _load_stats(self) -> Dict:
         try:
@@ -142,7 +160,16 @@ class GameStats:
     def display_stats(self):
         print("\nGame Statistics:")
         for k, v in self.stats.items():
-            print(f"{k.replace('_', ' ').capitalize()}: {v}")
+            if k.endswith("_time"):
+                # Format time values nicely
+                if k == "average_turn_time":
+                    print(f"Average turn time: {v:.1f} seconds")
+                else:
+                    hours, remainder = divmod(v, 3600)
+                    minutes, seconds = divmod(remainder, 60)
+                    print(f"Total {k.replace('_', ' ')}: {int(hours)}h {int(minutes)}m {int(seconds)}s")
+            else:
+                print(f"{k.replace('_', ' ').capitalize()}: {v}")
 
 
 #Game Manager/Gameplay aspect
@@ -155,6 +182,7 @@ class TricksyBattleGame:
         self.stats = GameStats() #Meant for saving the stats after game is done
         self.leader = None
         self.round = 0
+        self.game_start_time = 0.0  # Add game timer
         #The game start initialization, where everyone is at 0 points, round is 0
 
     def setup_game(self):
@@ -166,6 +194,7 @@ class TricksyBattleGame:
 
     def play_game(self):
         print("\nWelcome to Tricksy Battle!")
+        self.game_start_time = time.time()  # Start game timer
         self.setup_game()
         while self.round < 16 and self.human.hand:
             self.play_round()
@@ -228,7 +257,26 @@ class TricksyBattleGame:
 
     def _end_game(self):
         #Handles the endgame
+
+        # Calculate total game time
+        total_time = time.time() - self.game_start_time
+        minutes, seconds = divmod(total_time, 60)
+
+        # Update stats with timing data
+        self.stats.stats["total_game_time"] += total_time
+        self.stats.stats["human_turn_time"] += self.human.total_turn_time
+        self.stats.stats["computer_turn_time"] += self.computer.total_turn_time
+        total_turns = self.round * 2  # Each round has 2 turns
+        self.stats.stats["average_turn_time"] = (
+            (self.human.total_turn_time + self.computer.total_turn_time) / total_turns
+        )
+
         print("\n=== Game Over! ===")
+        print(f"Game duration: {int(minutes)}m {int(seconds)}s")
+        print(f"Your total thinking time: {self.human.total_turn_time:.1f}s")
+        print(f"Computer's total thinking time: {self.computer.total_turn_time:.1f}s")
+        print(f"Average turn time: {self.stats.stats['average_turn_time']:.1f}s")
+
         print(f"Final Score - You: {self.human.points}, Computer: {self.computer.points}")
         if self.human.points > self.computer.points:
             print("You win!")
