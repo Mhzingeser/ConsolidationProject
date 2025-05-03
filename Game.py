@@ -224,7 +224,7 @@ class TricksyBattleGame:
         elif self.computer.points > self.human.points:
             print("Computer wins.")
             self.stats.record_game(False, self.computer.points == 17)
-            self._computer_trash_talk()
+            self._computer_gloat_win()
         else:
             print("It's a tie!")
             self.stats.record_game(False)
@@ -246,6 +246,18 @@ class TricksyBattleGame:
             "LOL L + RATIO LOSER!!!!"
         ]
         print(f"Computer: {random.choice(taunts)}")
+
+    def _computer_gloat_win(self):
+        taunts = [
+            "Too easy.",
+            "I thought I was playing against another player, looks like I was playing against an easy bot",
+            "GG EZ",
+            "No need to retry, I will just win again",
+            "Just quit the game",
+            "You were the chosen one!",
+            "Hehehe easy win"
+        ]
+        print(f"Computer: {random.choice(taunts)}")    
 
         
 def main():
