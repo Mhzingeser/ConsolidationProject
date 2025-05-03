@@ -95,7 +95,7 @@ class Player:
                         print(f"Must follow suit with a {lead_suit} card!")
                         break
                     return card
-            print("Invalid choice. Try again.")
+            print("Invalid choice. Try again. Please check spelling, no need to check for capitalization")
 
 
 #Save Aspect
@@ -211,12 +211,12 @@ class TricksyBattleGame:
             print(f"\n{winner.name} shot the moon!")
             return True
         if (h >= 9 and c >= 1) or (c >= 9 and h >= 1):
-            print("\nOne player reached 9 points and the other has at least 1. Ending early.")
+            print("\nOne player reached 9 points and the other has at least 1. GameOver.")
             return True
         return False
 
     def _end_game(self):
-        print("\n=== Game Over ===")
+        print("\n=== Game Over! ===")
         print(f"Final Score - You: {self.human.points}, Computer: {self.computer.points}")
         if self.human.points > self.computer.points:
             print("You win!")
@@ -224,6 +224,7 @@ class TricksyBattleGame:
         elif self.computer.points > self.human.points:
             print("Computer wins.")
             self.stats.record_game(False, self.computer.points == 17)
+            self._computer_trash_talk()
         else:
             print("It's a tie!")
             self.stats.record_game(False)
