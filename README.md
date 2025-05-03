@@ -10,6 +10,7 @@
   - One player `leads` with any card.
   - The other player `must follow suit` if possible.
   - The higher card in the `lead suit` wins the round and scores a point.
+  - You `lead` a round if you win the previous round. 
 - After each round:
   - A random card from the deck is `revealed` (but not added to any hand).
   - If both players are down to 4 cards, 4 more cards are dealt.
@@ -54,19 +55,17 @@ Game file name should be `Game.py`
 **Classes and their functions**
 `Card`
   - This class is meant as the defining class for cards such as Jack of Spades, Diamonds, Queen, Hearts, etc. The values get initialized
-  - 
+  - It represents a single card.
 `Deck`
-  - This class represents the deck on hand that you will have. Giving you only 8 cards and tracks the threshold of cards remaining.
-  - 
+  - Represents a deck of 48 cards. This handles shuffling/dealing. 
 `AIStrategy`
   - This class is the basis of the AI function that leads to the Basic Strategy class
-  - 
-`Basic Strategy`
+  - Controls how computer opponent will play cards
+`Base Strategy`
   - This class has the AI choose randomly but on the basis of what 'suits' the card on hand.
-  - 
+  - (Refer to AIStrategy)
 `Player` 
-  - This is meant for the player themselves when playing against the AI. Has functions of choosing card, adding to hand, etc
-  - 
+  - Represents the player/computer and their action, action options.
 `GameStats`
   - This is where the game statistics go and when the game is over, the statistics are saved into a JSON. JSON is a way to save things into a file, its a text file that is in a non txt format.
   - 
