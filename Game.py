@@ -303,7 +303,8 @@ class TricksyBattleGame:
             "You should probably surrender now.",
             "Do you want a rematch already?",
             "I can't believe im playing against a player so mediocre",
-            "LOL L + RATIO LOSER!!!!"
+            "LOL L + RATIO LOSER!!!!",
+            "Your current location is 51.2763° N, 30.2219° E"
         ]
         print(f"Computer: {random.choice(taunts)}")
 
