@@ -68,7 +68,6 @@ Game file name should be `Game.py`
   - Represents the player/computer and their action, action options.
 `GameStats`
   - This is where the game statistics go and when the game is over, the statistics are saved into a JSON. JSON is a way to save things into a file, its a text file that is in a non txt format.
-  - 
 `TricksyBattleGame`
   - The main honcho of the game, its the manager and handler of all the classes, utilizing all the functions within the classes such as the initialization of all classes and functions. 
   - Handles win conditions, shuffles, and other card functions. 
