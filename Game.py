@@ -207,7 +207,12 @@ class TricksyBattleGame:
         print(f"\n=== Round {self.round} ===")
         print(f"Score - You: {self.human.points}, Computer: {self.computer.points}")
 
-        follower = self.computer if self.leader == self.human else self.human ## Peer Editor (Arnab Sanyal): A bit confused about what the else statement does here
+        if self.leader == self.human:
+            follower = self.computer
+        else:
+            follower = self.human
+
+       ## follower = self.computer if self.leader == self.human else self.human ## Peer Editor (Arnab Sanyal): A bit confused about what the else statement does here
         print(f"\n{self.leader.name} lead(s).")
         lead_card = self.leader.play_card()
         print(f"{self.leader.name} played: {lead_card}")
