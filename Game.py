@@ -1,6 +1,6 @@
 import os
 import random
-import json #This is for the save system
+import json #This is for the save system 
 from typing import List, Dict, Optional, Protocol  #These will be needed for their selective-
 #purposes, such as Listing cards on hand, options, protocol (for computer player).
 import time
@@ -10,8 +10,8 @@ from datetime import timedelta
 
 # Card Section
 
-class Card:
-    def __init__(self, suit: str, rank: str):    #We will need a constructor for these in order to call on a specific function for the card
+class Card: ## Peer Editor (Arnab Sanyal): Aren't classes considered to be anti-patterns?
+    def __init__(self, suit: str, rank: str):  #We will need a constructor for these in order to call on a specific function for the card
         self.suit = suit
         self.rank = rank
         #Intializes the cards of each type
@@ -23,7 +23,7 @@ class Card:
     def __repr__(self) -> str:
         return f"Card('{self.suit}', '{self.rank}')"
     
-    @property
+    @property ## Peer Editor (Arnab Sanyal): What does this do?
     def value(self) -> int:
         rank_values = {
             'Ace': 1, '2': 2, '3': 3, '4': 4, '5': 5,
@@ -70,6 +70,7 @@ class BaseStrategy:
         return random.choice(hand)
 
 #Player Component
+
 class Player:
     def __init__(self, name: str, is_computer: bool = False, strategy: Optional[AIStrategy] = None):
         self.name = name
@@ -151,15 +152,15 @@ class GameStats:
         self.stats["games_played"] += 1
         if human_won:
             self.stats["human_wins"] += 1
-        else:
+        else: ## Peer Editor (Arnab Sanyal): This works, but I would use an elif statement here for clarity (as you have two different 'alternative' conditions - computer wins and 'shoot the moon')
             self.stats["computer_wins"] += 1
-        if shot_the_moon:
+        if shot_the_moon: ## Peer Editor (Arnab Sanyal): Same as above
             self.stats["shot_the_moon"] += 1
         self.save_stats()
 
     def display_stats(self):
         print("\nGame Statistics:")
-        for k, v in self.stats.items():
+        for k, v in self.stats.items(): ## Peer Editor (Arnab Sanyal): I think the item names 'k' and 'v' are a bit too generic
             if k.endswith("_time"):
                 # Format time values nicely
                 if k == "average_turn_time":
@@ -175,7 +176,7 @@ class GameStats:
 #Game Manager/Gameplay aspect
 
 class TricksyBattleGame:
-    def __init__(self):
+    def __init__(self):  
         self.deck = Deck()
         self.human = Player("You")
         self.computer = Player("Computer", is_computer=True)
@@ -206,7 +207,7 @@ class TricksyBattleGame:
         print(f"\n=== Round {self.round} ===")
         print(f"Score - You: {self.human.points}, Computer: {self.computer.points}")
 
-        follower = self.computer if self.leader == self.human else self.human
+        follower = self.computer if self.leader == self.human else self.human ## Peer Editor (Arnab Sanyal): A bit confused about what the else statement does here
         print(f"\n{self.leader.name} lead(s).")
         lead_card = self.leader.play_card()
         print(f"{self.leader.name} played: {lead_card}")
@@ -250,7 +251,7 @@ class TricksyBattleGame:
             print(f"\n{winner.name} shot the moon!")
             return True
         if (h >= 9 and c >= 1) or (c >= 9 and h >= 1):
-            #If no longer possible to "shot the moon", then it will check the other win condition of 9 points
+            #If no longer possible to "shoot the moon", then it will check the other win condition of 9 points
             print("\nOne player reached 9 points and the other has at least 1. GameOver.") 
             return True
         return False
@@ -290,7 +291,7 @@ class TricksyBattleGame:
             self.stats.record_game(False)
         self.stats.display_stats()
     
-    def _computer_trash_talk(self):
+    def _computer_trash_talk(self): ## Peer Editor (Arnab Sanyal): This is really funny LOL
         taunts = [
             "Too easy.",
             "Did you mean to play that card?",
