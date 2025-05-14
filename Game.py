@@ -152,7 +152,7 @@ class GameStats:
         self.stats["games_played"] += 1
         if human_won:
             self.stats["human_wins"] += 1
-        else: ## Peer Editor (Arnab Sanyal): This works, but I would use an elif statement here for clarity (as you have two different 'alternative' conditions - computer wins and 'shoot the moon')
+        elif human_won == False: ## Peer Editor (Arnab Sanyal): This works, but I would use an elif statement here for clarity (as you have two different 'alternative' conditions - computer wins and 'shoot the moon')
             self.stats["computer_wins"] += 1
         if shot_the_moon: ## Peer Editor (Arnab Sanyal): Same as above
             self.stats["shot_the_moon"] += 1
